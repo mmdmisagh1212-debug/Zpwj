@@ -1,1 +1,121 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WireGuard4582 Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.3/Vazirmatn-font-face.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #090214;
+            --card-bg: #100a26;
+            --card-border: #1e1640;
+            --accent-cyan: #00f2fe;
+            --accent-green: #00e676;
+            --accent-pink: #ec4899;
+            --input-bg: #090317;
+            --text-light: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-light); min-height: 100vh; display: flex; justify-content: center; padding: 15px; }
+        .container { width: 100%; max-width: 450px; }
+        .title { text-align: center; font-size: 1.8rem; font-weight: 800; color: var(--accent-cyan); margin-bottom: 15px; }
+        
+        .admin-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 20px; margin-bottom: 15px; text-align: center; }
+        .admin-card h2 { font-size: 1.3rem; color: #fff; margin-bottom: 6px; }
+        .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; }
+
+        .form-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; text-align: right; }
+        
+        select, input { width: 100%; padding: 12px 15px; background: var(--input-bg); border: 1px solid var(--card-border); border-radius: 12px; color: #fff; font-size: 0.9rem; outline: none; text-align: center; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+        .btn-submit { width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 25px; background: linear-gradient(90deg, #00f2fe 0%, #ec4899 100%); color: #fff; font-size: 1rem; font-weight: bold; cursor: pointer; }
+        
+        .result-area { margin-top: 15px; display: none; background: #181136; padding: 12px; border-radius: 12px; word-break: break-all; font-size: 0.8rem; color: #00ffaa; text-align: left; direction: ltr; }
+        .copy-btn { background: var(--accent-cyan); color: #000; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; margin-top: 8px; cursor: pointer; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">WireGuard4582</h1>
+
+        <div class="admin-card">
+            <h2>WireGuard4582 Admin</h2>
+            <p class="subtitle">مدیریت کانفیگ و لینک‌های ساب اختصاصی</p>
+        </div>
+
+        <div class="form-card">
+            <h3 style="text-align: center; margin-bottom: 15px;">ساخت کانفیگ 🚀</h3>
+
+            <form id="wireguardForm">
+                <div class="form-group">
+                    <label>🌐 انتخاب سرور (کشور)</label>
+                    <select id="server">
+                        <option value="US">🇺🇸 آمریکا (New York)</option>
+                        <option value="DE">🇩🇪 آلمان (Frankfurt)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>✨ نام کانفیگ / آدرس کانفیگ اصلی (Vless / Vmess / Wireguard)</label>
+                    <input type="text" id="configString" placeholder="vless://... یا wg://..." required>
+                </div>
+
+                <div class="grid-3">
+                    <div class="form-group">
+                        <label>⏱ روز</label>
+                        <input type="number" id="days" value="60">
+                    </div>
+                    <div class="form-group">
+                        <label>📊 GB</label>
+                        <input type="number" id="gb" value="100">
+                    </div>
+                    <div class="form-group">
+                        <label>👥 کاربر</label>
+                        <input type="number" id="users" value="1">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">تولید لینک ساب کارآمد ⚡️</button>
+            </form>
+
+            <div id="result" class="result-area">
+                <div id="configUrl"></div>
+                <button class="copy-btn" onclick="copyResult()">کپی لینک ساب‌اسکریپشن استاندارد</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('wireguardForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const rawConfig = document.getElementById('configString').value.trim();
+
+            if(!rawConfig) {
+                alert('لطفاً کانفیگ ورودی را وارد کنید');
+                return;
+            }
+
+            // تبدیل کانفیگ به Base64 استاندارد جهت جلوگیری از پسوند txt و خطای خوانی در برنامه
+            const encodedSub = btoa(unescape(encodeURIComponent(rawConfig)));
+            const subDataUrl = "data:text/plain;charset=utf-8;base64," + encodedSub;
+
+            document.getElementById('configUrl').innerText = subDataUrl;
+            document.getElementById('result').style.display = 'block';
+        });
+
+        function copyResult() {
+            const text = document.getElementById('configUrl').innerText;
+            navigator.clipboard.writeText(text);
+            alert('لینک ساب‌اسکریپشن کپی شد!');
+        }
+    </script>
+</body>
+              </html>
 
